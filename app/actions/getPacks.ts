@@ -35,8 +35,8 @@ export async function getPacks(): Promise<Pack[]> {
     ).then((res) => res.json());
 
     if (
-      (await checkIfAccessable(packData.beatmapsets[0].covers.cover)).status !==
-      200
+      (await checkIfAccessable(packData?.beatmapsets[0]?.covers?.cover))
+        .status !== 200
     )
       packData.beatmapsets[0].covers.cover = `https://osu.ppy.sh/assets/images/default-bg.7594e945.png`;
 

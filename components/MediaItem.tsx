@@ -5,12 +5,12 @@ import Image from "next/image";
 
 interface MediaItemProps {
   data: Pack | Song;
-  onClick: () => void;
+  onClick?: (id: string) => void;
 }
 
 export function MediaItem({ data, onClick }: MediaItemProps) {
   function handleClick() {
-    onClick();
+    if (onClick) onClick(data.id);
   }
 
   return (

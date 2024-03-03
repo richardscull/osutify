@@ -1,7 +1,9 @@
 import { getSongsByIds } from "@/app/actions/getSongsByIds";
 
 export async function POST(request: Request) {
-  const { access_token, ids } = await request.json();
+  const { ids } = await request.json();
+  const cookie = request.headers.get("Cookie");
+  const access_token = cookie?.split("osu_access_token=")[1]?.split(";")[0];
 
   if (!access_token || !ids || ids.length === 0) {
     return new Response(JSON.stringify({ message: "No data" }), {

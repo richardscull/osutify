@@ -3,15 +3,17 @@ import { LikeButton } from "@/components/LikeButton";
 import { Song } from "@/types";
 import { useEffect, useState } from "react";
 import { MediaItem } from "@/components/MediaItem";
+import useOnPlay from "@/app/hooks/useOnPlay";
 
-export function LikedContent({ token }: { token: string }) {
+export function LikedContent() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
+  const onPlay = useOnPlay(songs);
 
   useEffect(() => {
     async function fetchData() {
       const likedSongs = localStorage.getItem("liked_songs");
-      if (!likedSongs || likedSongs.length === 0 || !token) return;
+      if (!likedSongs || likedSongs.length === 0) return;
 
       const songs = await fetch("/api/getSongsByIds", {
         method: "POST",
@@ -19,7 +21,6 @@ export function LikedContent({ token }: { token: string }) {
         credentials: "same-origin",
         body: JSON.stringify({
           ids: JSON.parse(likedSongs),
-          access_token: token,
         }),
       }).then((res) => res.json());
       setLoading(false);
@@ -29,7 +30,7 @@ export function LikedContent({ token }: { token: string }) {
     }
 
     fetchData();
-  }, [token]);
+  }, []);
 
   if (!songs || songs.length === 0 || loading) {
     return (
@@ -52,7 +53,7 @@ export function LikedContent({ token }: { token: string }) {
       {songs.map((song: any) => (
         <div key={song.id} className="flex items-center gap-x-4 w-full">
           <div className="flex-1">
-            <MediaItem onClick={() => {}} data={song} />
+            <MediaItem onClick={(id: string) => onPlay(id)} data={song} />
           </div>
           <LikeButton songId={song.id} />
         </div>

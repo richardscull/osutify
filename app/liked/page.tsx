@@ -6,9 +6,6 @@ import { cookies } from "next/headers";
 export const revalidate = 0;
 
 export default function Liked() {
-  const cookieStore = cookies();
-  const osu_access_token = cookieStore.get("osu_access_token")?.value;
-
   return (
     <div
       className="
@@ -56,7 +53,7 @@ export default function Liked() {
           </div>
         </div>
       </Header>
-      <LikedContent token={osu_access_token || ""} />
+      <LikedContent />
     </div>
   );
 }
