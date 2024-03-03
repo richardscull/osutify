@@ -4,10 +4,11 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
 
+
   const servers = [
-    "https://proxy.nerinyan.moe/d/",
-    "https://osu.direct/d/",
-    "https://catboy.best/d/",
+    "https://osu.direct/d/", // osu!direct
+    "https://proxy.nerinyan.moe/d/", // nerinyan my beloved
+    "https://catboy.best/d/", // catboy.best
   ];
 
   let audioStream = null;

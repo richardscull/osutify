@@ -54,8 +54,9 @@ export function LikedContent() {
 
   return (
     <div className="flex flex-col gap-y-2 w-full p-6">
-      {songs.map((song: any) => (
+      {songs.map((song: Song, index: number) => (
         <div key={song.id} className="flex items-center gap-x-4 w-full">
+          <p className="text-neutral-400">{index + 1}</p>
           <div className="flex-1">
             <MediaItem onClick={(id: string) => onPlay(id)} data={song} />
           </div>
