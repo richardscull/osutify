@@ -8,9 +8,8 @@ export async function getSongsByQuery(
 ): Promise<Song[]> {
   const cookieStore = cookies();
   if (!cookieStore.get("osu_access_token")) return [];
-
   const { beatmapsets } = await fetch(
-    `https://osu.ppy.sh/api/v2/beatmapsets/search?q=${query}${
+    `https://osu.ppy.sh/api/v2/beatmapsets/search?sort=plays_desc&q=${query}${
       showUnranked ? "&s=any" : "&s=ranked"
     }`,
     {
