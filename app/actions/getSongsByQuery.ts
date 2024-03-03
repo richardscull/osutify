@@ -10,7 +10,7 @@ export async function getSongsByQuery(
   const cookieStore = cookies();
   if (!cookieStore.get("osu_access_token")) return [];
   const { beatmapsets } = await axios.get(
-    `https://osu.ppy.sh/api/v2/beatmapsets/search?sort=plays_desc${
+    `https://osu.ppy.sh/api/v2/beatmapsets/search?${
       query && `&q=${query}`
     }${showUnranked ? "&s=any" : "&s=ranked"}`,
     {
