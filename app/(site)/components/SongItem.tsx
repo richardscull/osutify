@@ -25,8 +25,13 @@ export function SongItem({ data, onClick }: SongItemProps) {
         />
       </div>
       <div className="flex flex-col items-start w-full pt-4 gap-y-1">
-        <p className="font-semibold truncate w-full">{data.title}</p>
-        <p className="text-neutral-400 text-sm pb-4 w-full truncate">
+        <p title={data.title} className="font-semibold truncate w-full">
+          {data.title}
+        </p>
+        <p
+          title={`By ${data.author}`}
+          className="text-neutral-400 text-sm pb-4 w-full truncate"
+        >
           By {data.author}
         </p>
       </div>

@@ -30,10 +30,10 @@ export function MediaItem({ data, onClick }: MediaItemProps) {
         />
       </div>
       <div className="flex flex-col gap-y-1 overflow-hidden">
-        <p className="font-semibold text-neutral-100 truncate w-full">
+        <p title={data.title} className="font-semibold text-neutral-100 truncate w-full">
           {data.title}
         </p>
-        <p className="text-neutral-400 text-sm truncate w-full">
+        <p title={data.author} className="text-neutral-400 text-sm truncate w-full">
           {data.author}
         </p>
       </div>

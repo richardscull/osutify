@@ -24,7 +24,9 @@ export function SidebarItem({
       )}
     >
       <Icon size={26} />
-      <p className="truncate w-full">{label}</p>
+      <p title={label} className="truncate w-full">
+        {label}
+      </p>
     </Link>
   );
 }
