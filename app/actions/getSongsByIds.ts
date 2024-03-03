@@ -8,20 +8,18 @@ export async function getSongsByIds(
 ): Promise<Song[]> {
   if (access_token === "") return [];
 
-  const beatmapsets = [];
-  for (let i = 0; i < ids.length; i++) {
-    const data = await fetch(
-      `https://osu.ppy.sh/api/v2/beatmapsets/${ids[i]}`,
-      {
+  const beatmapsets = await Promise.all(
+    ids.map(async (id) => {
+      const data = await fetch(`https://osu.ppy.sh/api/v2/beatmapsets/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
           Authorization: `Bearer ${access_token}`,
         },
-      }
-    ).then((res) => res.json());
-    beatmapsets.push(data);
-  }
+      }).then((res) => res.json());
+      return data;
+    })
+  );
 
   if (!beatmapsets) {
     return [];
@@ -31,7 +29,7 @@ export async function getSongsByIds(
     id: song.id,
     author: song.artist,
     title: song.title,
-    song_url: song.preview_url, 
+    song_url: song.preview_url,
     thumbnail: song.covers.cover,
   }));
 
