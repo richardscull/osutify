@@ -20,6 +20,8 @@ export function SongItem({ data, onClick }: SongItemProps) {
           src={data.thumbnail || "/images/unknown.jpg"}
           alt="Image"
           loading="lazy"
+          blurDataURL="/images/unknown.jpg"
+          placeholder="blur"
         />
       </div>
       <div className="flex flex-col items-start w-full pt-4 gap-y-1">

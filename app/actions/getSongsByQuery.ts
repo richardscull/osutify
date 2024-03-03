@@ -1,6 +1,7 @@
 import { Song } from "@/types";
 import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
+import axios from "axios";
 
 export async function getSongsByQuery(
   query: string,
@@ -8,10 +9,10 @@ export async function getSongsByQuery(
 ): Promise<Song[]> {
   const cookieStore = cookies();
   if (!cookieStore.get("osu_access_token")) return [];
-  const { beatmapsets } = await fetch(
-    `https://osu.ppy.sh/api/v2/beatmapsets/search?sort=plays_desc&q=${query}${
-      showUnranked ? "&s=any" : "&s=ranked"
-    }`,
+  const { beatmapsets } = await axios.get(
+    `https://osu.ppy.sh/api/v2/beatmapsets/search?sort=plays_desc${
+      query && `&q=${query}`
+    }${showUnranked ? "&s=any" : "&s=ranked"}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -19,7 +20,7 @@ export async function getSongsByQuery(
         Authorization: `Bearer ${cookieStore.get("osu_access_token")?.value}`,
       },
     }
-  ).then((res) => res.json());
+  ).then((res) => res.data);
 
   if (!beatmapsets) return [];
 

@@ -1,5 +1,6 @@
 import { Song } from "@/types";
 import { checkSongCover } from "./utils";
+import axios from "axios";
 
 export async function getSongsByIds(
   ids: string[],
@@ -11,13 +12,15 @@ export async function getSongsByIds(
 
   const beatmapsets = await Promise.all(
     ids.map(async (id) => {
-      const data = await fetch(`https://osu.ppy.sh/api/v2/beatmapsets/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${access_token}`,
-        },
-      }).then((res) => res.json());
+      const data = await axios
+        .get(`https://osu.ppy.sh/api/v2/beatmapsets/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        })
+        .then((res) => res.data);
       return data;
     })
   );

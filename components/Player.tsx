@@ -4,25 +4,33 @@ import usePlayer from "@/app/hooks/usePlayer";
 import { Song } from "@/types";
 import { useEffect, useState } from "react";
 import { PlayerConent } from "./PlayerContent";
+import axios, { AxiosRequestConfig } from "axios";
 
 export function Player() {
   const player = usePlayer();
   const [song, setSong] = useState<Song>({} as Song);
 
   useEffect(() => {
-    console.log("UPDATE");
     async function fetchData() {
       if (!player.activeId) return;
 
-      const songs = await fetch("/api/getSongsByIds", {
-        method: "POST",
-        headers: new Headers({ "Content-Type": "application/json" }),
-        credentials: "same-origin",
-        body: JSON.stringify({
+      // Still don't know why some requests being cancelled,
+      // so I went with timeout and retries to fix it
+
+      const songs = await axiosWithRetry(
+        "/api/getSongsByIds",
+        {
           ids: [player.activeId],
           getRealSongUrl: true,
-        }),
-      }).then((res) => res.json());
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          timeout: 1000,
+        }
+      ).catch((err) => {
+        console.error(err);
+        return { message: "Error" };
+      });
 
       if (songs.message) return; // Means we got an error
       songs[0].song_url = "/api/getSongAudio?id=" + songs[0].id;
@@ -40,4 +48,23 @@ export function Player() {
       <PlayerConent key={song.song_url} song={song} songUrl={song.song_url} />
     </div>
   );
+}
+
+async function axiosWithRetry(
+  url: string,
+  data: any,
+  config: AxiosRequestConfig<any> | undefined,
+  retries = 3
+) {
+  try {
+    const response = await axios.post(url, data, config);
+    return response.data;
+  } catch (error) {
+    if (retries > 0) {
+      console.log(`Request timed out. Retrying... (${retries} retries left)`);
+      return axiosWithRetry(url, data, config, retries - 1);
+    } else {
+      throw error;
+    }
+  }
 }

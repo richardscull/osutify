@@ -34,6 +34,9 @@ export default function Liked() {
                 fill
                 src="/images/liked.png"
                 alt="Playlist"
+                loading="lazy"
+                blurDataURL="/images/unknown.jpg"
+                placeholder="blur"
               />
             </div>
             <div className="flex flex-col gap-y-2 mt-4 md:mt-0">

@@ -4,6 +4,7 @@ import { Song } from "@/types";
 import { useEffect, useState } from "react";
 import { MediaItem } from "@/components/MediaItem";
 import useOnPlay from "@/app/hooks/useOnPlay";
+import axios from "axios";
 
 export function LikedContent() {
   const [songs, setSongs] = useState<Song[]>([]);
@@ -15,14 +16,17 @@ export function LikedContent() {
       const likedSongs = localStorage.getItem("liked_songs");
       if (!likedSongs || likedSongs.length === 0) return setLoading(false);
 
-      const songs = await fetch("/api/getSongsByIds", {
-        method: "POST",
-        headers: new Headers({ "Content-Type": "application/json" }),
-        credentials: "same-origin",
-        body: JSON.stringify({
-          ids: JSON.parse(likedSongs),
-        }),
-      }).then((res) => res.json());
+      const songs = await axios
+        .post(
+          "/api/getSongsByIds",
+          {
+            ids: JSON.parse(likedSongs),
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+        .then((res) => res.data);
       setLoading(false);
 
       if (songs.message) return; // Means we got an error

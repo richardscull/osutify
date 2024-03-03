@@ -11,6 +11,7 @@
   "dependencies": {
     "@radix-ui/react-slider": "^1.1.2",
     "@zip.js/zip.js": "^2.7.36",
+    "axios": "^1.6.7",
     "cookies-next": "^4.1.1",
     "next": "^14.1.1",
     "query-string": "^9.0.0",

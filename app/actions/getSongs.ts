@@ -1,21 +1,21 @@
 import { Song } from "@/types";
 import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
+import axios from "axios";
 
 export async function getSongs(): Promise<Song[]> {
   const cookieStore = cookies();
   if (!cookieStore.get("osu_access_token")) return [];
 
-  const { beatmapsets } = await fetch(
-    "https://osu.ppy.sh/api/v2/beatmapsets/search",
-    {
+  const { beatmapsets } = await axios
+    .get("https://osu.ppy.sh/api/v2/beatmapsets/search", {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         Authorization: `Bearer ${cookieStore.get("osu_access_token")?.value}`,
       },
-    }
-  ).then((res) => res.json());
+    })
+    .then((res) => res.data);
 
   if (!beatmapsets) {
     return [];
