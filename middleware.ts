@@ -10,6 +10,9 @@ import { NextResponse, NextRequest } from "next/server";
  */
 
 export async function middleware(request: NextRequest) {
+  if (request.method !== "GET" || request.nextUrl.pathname.includes("/api"))
+    return NextResponse.next(); // Don't run this middleware on POST requests or API routes
+
   const osu_access_token = request.cookies.get("osu_access_token");
   const response = NextResponse.next();
 

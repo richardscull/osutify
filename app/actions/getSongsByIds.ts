@@ -1,4 +1,5 @@
 import { Song } from "@/types";
+import { checkSongCover } from "./utils";
 
 export async function getSongsByIds(
   ids: string[],
@@ -24,6 +25,12 @@ export async function getSongsByIds(
   if (!beatmapsets) {
     return [];
   }
+
+  await Promise.all(
+    beatmapsets.map(async (song: any) => {
+      await checkSongCover(song);
+    })
+  );
 
   const songs = beatmapsets.map((song: any) => ({
     id: song.id,

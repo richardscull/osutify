@@ -1,5 +1,6 @@
 import { Pack } from "@/types";
 import { cookies } from "next/headers";
+import { checkSongCover } from "./utils";
 
 export async function getPacks(): Promise<Pack[]> {
   const cookieStore = cookies();
@@ -34,12 +35,8 @@ export async function getPacks(): Promise<Pack[]> {
       }
     ).then((res) => res.json());
 
-    if (
-      packData?.beatmapsets?.length !== 0 &&
-      (await checkIfAccessable(packData?.beatmapsets[0]?.covers?.cover))
-        .status !== 200
-    )
-      packData.beatmapsets[0].covers.cover = `https://osu.ppy.sh/assets/images/default-bg.7594e945.png`;
+    if (packData?.beatmapsets?.length !== 0)
+      await checkSongCover(packData.beatmapsets[0]);
 
     return {
       id: pack.tag.toString(),
@@ -52,8 +49,4 @@ export async function getPacks(): Promise<Pack[]> {
   const packs = await Promise.all(packsPromises);
 
   return packs;
-}
-
-async function checkIfAccessable(url: string) {
-  return await fetch(url);
 }
