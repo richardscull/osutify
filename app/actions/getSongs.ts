@@ -21,7 +21,7 @@ export async function getSongs(): Promise<Song[]> {
     id: song.id,
     author: song.artist,
     title: song.title,
-    song_url: song.preview_url, // TODO: change to real song url
+    song_url: song.preview_url, 
     thumbnail: song.covers.cover,
   }));
 

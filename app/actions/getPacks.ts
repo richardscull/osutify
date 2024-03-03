@@ -35,6 +35,7 @@ export async function getPacks(): Promise<Pack[]> {
     ).then((res) => res.json());
 
     if (
+      packData?.beatmapsets?.length !== 0 &&
       (await checkIfAccessable(packData?.beatmapsets[0]?.covers?.cover))
         .status !== 200
     )

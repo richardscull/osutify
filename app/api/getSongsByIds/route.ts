@@ -5,7 +5,7 @@ export async function POST(request: Request) {
   const cookie = request.headers.get("Cookie");
   const access_token = cookie?.split("osu_access_token=")[1]?.split(";")[0];
 
-  if (!access_token || !ids || ids.length === 0) {
+  if (!access_token || !ids || ids.length === 0 || !cookie) {
     return new Response(JSON.stringify({ message: "No data" }), {
       status: 400,
     });

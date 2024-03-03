@@ -11,7 +11,6 @@ import Slider from "./Slider";
 import usePlayer from "@/app/hooks/usePlayer";
 import { useEffect, useRef, useState } from "react";
 import { TbRepeat, TbRepeatOff } from "react-icons/tb";
-import { MdMusicNote } from "react-icons/md";
 import { BiShuffle } from "react-icons/bi";
 
 interface PlayerContentProps {
@@ -69,7 +68,7 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
     onpause: () => {
       setIsPlaying(false);
     },
-    format: ["mp3"], // ! Osu soungs could be .ogg too, so could be an error here
+    format: ["mp3"], 
   });
 
   useEffect(() => {

@@ -10,7 +10,7 @@ interface SearchProps {
 export const revalidate = 0;
 
 export default async function Search({ searchParams }: SearchProps) {
-  const songs = await getSongsByQuery(searchParams.query);
+  const songs = await getSongsByQuery(searchParams.query, true);
 
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">

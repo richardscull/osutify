@@ -13,7 +13,7 @@ export function LikedContent() {
   useEffect(() => {
     async function fetchData() {
       const likedSongs = localStorage.getItem("liked_songs");
-      if (!likedSongs || likedSongs.length === 0) return;
+      if (!likedSongs || likedSongs.length === 0) return setLoading(false);
 
       const songs = await fetch("/api/getSongsByIds", {
         method: "POST",
