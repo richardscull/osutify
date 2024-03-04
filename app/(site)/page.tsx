@@ -3,7 +3,7 @@ import { ListItem } from "@/components/ListItem";
 import { getSongs } from "../actions/getSongs";
 import { PageContent } from "./components/PageContent";
 
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export default async function Home() {
   const songs = await getSongs();

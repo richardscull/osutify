@@ -4,7 +4,6 @@ import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { getPacks } from "./actions/getPacks";
 import { Player } from "@/components/Player";
-import { cookies } from "next/headers";
 
 const font = Figtree({ subsets: ["latin"] });
 

@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Header } from "@/components/Header";
 import LikedContent from "./components/LikedContent";
-import { cookies } from "next/headers";
 
 export const revalidate = 0;
 

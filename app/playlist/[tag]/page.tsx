@@ -3,8 +3,6 @@ import { Header } from "@/components/Header";
 import { getPack } from "@/app/actions/getPack";
 import PlaylistContent from "./components/PlaylistContent";
 
-export const revalidate = 0;
-
 export default async function Playlist({
   params,
 }: {
