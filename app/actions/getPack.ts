@@ -1,4 +1,4 @@
-import { Pack, Song } from "@/types";
+import { Song } from "@/types";
 import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
 import axios from "axios";

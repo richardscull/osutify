@@ -7,12 +7,12 @@ import { LikeButton } from "./LikeButton";
 import { BsPauseFill, BsPlayFill } from "react-icons/bs";
 import { AiFillStepBackward, AiFillStepForward } from "react-icons/ai";
 import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
-import Slider from "./Slider";
-import usePlayer from "@/app/hooks/usePlayer";
 import { useEffect, useRef, useState } from "react";
 import { TbRepeat, TbRepeatOff } from "react-icons/tb";
 import { BiShuffle } from "react-icons/bi";
 import { VscLoading } from "react-icons/vsc";
+import usePlayer from "@/app/hooks/usePlayer";
+import Slider from "./Slider";
 
 interface PlayerContentProps {
   song: Song;
