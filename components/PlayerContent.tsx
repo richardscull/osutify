@@ -35,25 +35,30 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
   }, [player.loop]);
 
   function onPlayNext() {
-    if (player.ids.length === 0) return;
+    if (player.songs.length === 0) return;
     if (sound?.loop() === true) return handleSeek(0);
 
-    const currentIndex = player.ids.indexOf(player.activeId || "");
-    const nextSong = player.ids[currentIndex + 1];
+    const currentIndex = player.songs.indexOf(
+      player.activeSong || ({} as Song)
+    );
+    const nextSong = player.songs[currentIndex + 1];
 
-    if (!nextSong) return player.setId(player.ids[0]);
-    player.setId(nextSong);
+    if (!nextSong) return player.setSong(player.songs[0]);
+    player.setSong(nextSong);
   }
 
   const onPlayPrevious = () => {
-    if (player.ids.length === 0) return;
+    if (player.songs.length === 0) return;
     if (sound?.loop() === true) return handleSeek(0);
 
-    const currentIndex = player.ids.indexOf(player.activeId || "");
-    const previousSong = player.ids[currentIndex - 1];
+    const currentIndex = player.songs.indexOf(
+      player.activeSong || ({} as Song)
+    );
+    const previousSong = player.songs[currentIndex - 1];
 
-    if (!previousSong) return player.setId(player.ids[player.ids.length - 1]);
-    player.setId(previousSong);
+    if (!previousSong)
+      return player.setSong(player.songs[player.songs.length - 1]);
+    player.setSong(previousSong);
   };
 
   const [play, { pause, duration, sound }] = useSound(songUrl, {
