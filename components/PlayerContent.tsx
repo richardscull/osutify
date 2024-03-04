@@ -12,6 +12,7 @@ import usePlayer from "@/app/hooks/usePlayer";
 import { useEffect, useRef, useState } from "react";
 import { TbRepeat, TbRepeatOff } from "react-icons/tb";
 import { BiShuffle } from "react-icons/bi";
+import { VscLoading } from "react-icons/vsc";
 
 interface PlayerContentProps {
   song: Song;
@@ -22,9 +23,10 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
   const player = usePlayer();
   const [currentSeek, setCurrentSeek] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const loopRef = useRef(player.loop);
 
-  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const Icon = isLoading ? VscLoading : isPlaying ? BsPauseFill : BsPlayFill;
   const VolumeIcon = player.volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
   const LoopIcon = player.loop === true ? TbRepeat : TbRepeatOff;
 
@@ -68,11 +70,12 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
     onpause: () => {
       setIsPlaying(false);
     },
-    format: ["mp3"], 
+    format: ["mp3"],
   });
 
   useEffect(() => {
     sound?.play();
+    if (sound) setIsLoading(false);
 
     const seekInterval = setInterval(() => {
       if (!sound) return;
@@ -117,7 +120,10 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
           onClick={handlePlay}
           className="h-10 w-10 flex items-center justify-center rounded-full bg-white p-1 cursor-pointer"
         >
-          <Icon size={30} className="text-black" />
+          <Icon
+            size={30}
+            className={`text-black ${isLoading ? "animate-spin" : ""}`}
+          />
         </div>
       </div>
 
@@ -133,7 +139,10 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
             onClick={handlePlay}
             className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer"
           >
-            <Icon size={30} className="text-black" />
+            <Icon
+              size={30}
+              className={`text-black ${isLoading ? "animate-spin" : ""}`}
+            />
           </div>
           <AiFillStepForward
             size={30}
