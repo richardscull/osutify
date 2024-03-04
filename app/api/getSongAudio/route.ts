@@ -18,32 +18,38 @@ export async function GET(request: Request) {
   blob = await blobRace(blob, servers, id!);
 
   if (blob) {
-    const reader = new zip.ZipReader(new zip.BlobReader(blob));
-    const files = (await reader.getEntries()) || [];
+    try {
+      const reader = new zip.ZipReader(new zip.BlobReader(blob));
+      const files = (await reader.getEntries()) || [];
 
-    for (const file of files) {
-      if (file.filename.endsWith(".osu")) {
-        await file.getData!(new zip.TextWriter()).then(async (text) => {
-          const lines = text.split("\n");
-          for (const line of lines) {
-            if (line.startsWith("AudioFilename:")) {
-              const audioFilename = line.split(":")[1].trim();
-              const audioFile = files.find((f) => f.filename === audioFilename);
-
-              if (audioFile) {
-                const mp3Blob = await audioFile.getData!(
-                  new zip.BlobWriter(`audio/${audioFilename.split(".").pop()}`)
+      for (const file of files) {
+        if (file.filename.endsWith(".osu")) {
+          await file.getData!(new zip.TextWriter()).then(async (text) => {
+            const lines = text.split("\n");
+            for (const line of lines) {
+              if (line.startsWith("AudioFilename:")) {
+                const audioFilename = line.split(":")[1].trim();
+                const audioFile = files.find(
+                  (f) => f.filename === audioFilename
                 );
-                audioStream = mp3Blob;
-              }
 
-              break;
-            } // 🧗 <- This is Jack. Jack loves climbing overly nested things.
-          }
-        });
-        break;
+                if (audioFile) {
+                  const mp3Blob = await audioFile.getData!(
+                    new zip.BlobWriter(
+                      `audio/${audioFilename.split(".").pop()}`
+                    )
+                  );
+                  audioStream = mp3Blob;
+                }
+
+                break;
+              } // 🧗 <- This is Jack. Jack loves climbing overly nested things.
+            }
+          });
+          break;
+        }
       }
-    }
+    } catch (_) {}
   }
 
   let isShortVer = false;
@@ -57,7 +63,7 @@ export async function GET(request: Request) {
     headers: {
       "Content-Type": "audio/mp3",
       "Content-Length": audioStream.size.toString(),
-      "Cache-Control": `public, max-age=${isShortVer ? 3600 : 31536000}`,
+      "Cache-Control": `public, max-age=${isShortVer ? 0 : 31536000}`,
     },
   });
 }

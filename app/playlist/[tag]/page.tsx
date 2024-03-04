@@ -37,7 +37,7 @@ export default async function Playlist({
           >
             <div className="relative h-32 w-32 lg:h-44 lg:w-44">
               <Image
-                className="object-cover"
+                className="object-cover rounded-lg shadow-2xl shadow-black"
                 fill
                 src={songs?.[0]?.thumbnail || "/images/unknown.jpg"}
                 alt="Playlist"

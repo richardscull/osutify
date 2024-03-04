@@ -13,7 +13,7 @@ export async function getSongsByQuery(
   try {
     const { beatmapsets } = await axios
       .get(
-        `https://osu.ppy.sh/api/v2/beatmapsets/search?${
+        `https://osu.ppy.sh/api/v2/beatmapsets/search?nsfw=true${
           query && `&q=${query}`
         }${showUnranked ? "&s=any" : "&s=ranked"}`,
         {
