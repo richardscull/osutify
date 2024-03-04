@@ -111,14 +111,18 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
     sound?.seek(value);
   };
 
+  const openBeatmap = (id: string) => {
+    window.open(`https://osu.ppy.sh/beatmapsets/${id}`);
+  };
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full ">
       <div className="flex w-full justify-start mb-12">
         <div className="flex items-center gap-x-4 ">
           {song.title.length > 45 ? (
-            <MediaItem data={song} truncate={true} />
+            <MediaItem data={song} truncate={true} onClick={openBeatmap} />
           ) : (
-            <MediaItem data={song} />
+            <MediaItem data={song} onClick={openBeatmap} />
           )}
 
           <LikeButton songId={song.id} />
