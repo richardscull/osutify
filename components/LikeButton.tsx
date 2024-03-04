@@ -54,7 +54,7 @@ export function LikeButton({ songId }: LikeButtonProps) {
       "
       onClick={handleLike}
     >
-      <Icon color={isLiked ? "#22c55e" : "white"} size={25} />
+      <Icon color={isLiked ? "#EC4899" : "white"} size={25} />
     </button>
   );
 }

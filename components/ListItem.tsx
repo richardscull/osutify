@@ -34,7 +34,7 @@ export function ListItem({ image, name, href }: ListItemProps) {
       <p title={name} className="font-medium truncate py-5">
         {name}
       </p>
-      <div className="absolute transition opacity-0 rounded-full flex items-center justify-center bg-green-500 p-4 drop-shadow-sm right-5 group-hover:opacity-100 hover:scale-100">
+      <div className="absolute transition opacity-0 rounded-full flex items-center justify-center bg-pink-500 p-4 drop-shadow-sm right-5 group-hover:opacity-100 hover:scale-100">
         <FaPlay className="text-black" />
       </div>
     </button>
