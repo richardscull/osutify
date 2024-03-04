@@ -1,15 +1,21 @@
-import { Song } from "@/types";
+import { Pack, Song } from "@/types";
 import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
 import axios from "axios";
 
-export async function getSongs(): Promise<Song[]> {
+interface GetPackResponse {
+  packName: string;
+  songs: Song[];
+}
+
+export async function getPack(tag: string): Promise<GetPackResponse> {
   const cookieStore = cookies();
-  if (!cookieStore.get("osu_access_token")) return [];
+  if (!cookieStore.get("osu_access_token"))
+    return { packName: "Not found", songs: [] };
 
   try {
-    const { beatmapsets } = await axios
-      .get("https://osu.ppy.sh/api/v2/beatmapsets/search", {
+    const data = await axios
+      .get(`https://osu.ppy.sh/api/v2/beatmaps/packs/${tag}`, {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
@@ -18,9 +24,9 @@ export async function getSongs(): Promise<Song[]> {
       })
       .then((res) => res.data);
 
-    if (!beatmapsets) {
-      return [];
-    }
+    const { beatmapsets } = data;
+
+    if (!beatmapsets) return { packName: "Not found", songs: [] };
 
     await Promise.all(
       beatmapsets.map(async (song: any) => {
@@ -36,9 +42,9 @@ export async function getSongs(): Promise<Song[]> {
       thumbnail: song.covers.cover,
     }));
 
-    return songs;
+    return { packName: data.name, songs };
   } catch (err) {
     console.error(err);
-    return [];
+    return { packName: "Not found", songs: [] };
   }
 }

@@ -110,7 +110,12 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
     <div className="grid grid-cols-2 md:grid-cols-3 h-full ">
       <div className="flex w-full justify-start mb-12">
         <div className="flex items-center gap-x-4 ">
-          <MediaItem data={song} />
+          {song.title.length > 45 ? (
+            <MediaItem data={song} truncate={true} />
+          ) : (
+            <MediaItem data={song} />
+          )}
+
           <LikeButton songId={song.id} />
         </div>
       </div>

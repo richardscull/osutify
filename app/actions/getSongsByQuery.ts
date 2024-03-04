@@ -9,34 +9,44 @@ export async function getSongsByQuery(
 ): Promise<Song[]> {
   const cookieStore = cookies();
   if (!cookieStore.get("osu_access_token")) return [];
-  const { beatmapsets } = await axios.get(
-    `https://osu.ppy.sh/api/v2/beatmapsets/search?${
-      query && `&q=${query}`
-    }${showUnranked ? "&s=any" : "&s=ranked"}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${cookieStore.get("osu_access_token")?.value}`,
-      },
-    }
-  ).then((res) => res.data);
 
-  if (!beatmapsets) return [];
+  try {
+    const { beatmapsets } = await axios
+      .get(
+        `https://osu.ppy.sh/api/v2/beatmapsets/search?${
+          query && `&q=${query}`
+        }${showUnranked ? "&s=any" : "&s=ranked"}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${
+              cookieStore.get("osu_access_token")?.value
+            }`,
+          },
+        }
+      )
+      .then((res) => res.data);
 
-  await Promise.all(
-    beatmapsets.map(async (song: any) => {
-      await checkSongCover(song);
-    })
-  );
+    if (!beatmapsets) return [];
 
-  const songs = beatmapsets.map((song: any) => ({
-    id: song.id,
-    author: song.artist,
-    title: song.title,
-    song_url: song.preview_url,
-    thumbnail: song.covers.cover,
-  }));
+    await Promise.all(
+      beatmapsets.map(async (song: any) => {
+        await checkSongCover(song);
+      })
+    );
 
-  return songs;
+    const songs = beatmapsets.map((song: any) => ({
+      id: song.id,
+      author: song.artist,
+      title: song.title,
+      song_url: song.preview_url,
+      thumbnail: song.covers.cover,
+    }));
+
+    return songs;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
 }

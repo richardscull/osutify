@@ -1,12 +1,14 @@
 import { Pack } from "@/types";
 import { TbPlaylist } from "react-icons/tb";
 import { MediaItem } from "./MediaItem";
+import { useRouter } from "next/navigation";
 
 interface LibraryProps {
   packs: Pack[];
 }
 
 export function Library({ packs }: LibraryProps) {
+  const router = useRouter();
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between px-5 pt-4">
@@ -19,7 +21,7 @@ export function Library({ packs }: LibraryProps) {
         {packs.map((item) => (
           <MediaItem
             key={item.id}
-            onClick={() => (window.location.href = `/pack/${item.id}`)}
+            onClick={() => router.push(`/playlist/${item.id}`)}
             data={item}
           />
         ))}
