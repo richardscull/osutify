@@ -14,7 +14,7 @@ export function Greeting() {
     ];
 
     setGreeting(greetings[Math.floor(date.getHours() / 6)]);
-  }, [greeting]);
+  }, []);
 
   return (
     <h1 className="text-white text-3xl font-semibold">
