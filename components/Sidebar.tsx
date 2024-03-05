@@ -31,7 +31,7 @@ export function Sidebar({ children, packs }: SidebarProps) {
         icon: BiSearch,
         label: "Search",
         active: pathName === "/search",
-        href: "/search",
+        href: "/search?query=",
       },
     ],
     [pathName]

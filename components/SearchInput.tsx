@@ -12,7 +12,7 @@ export function SearchInput() {
 
   useEffect(() => {
     const query = { query: debouncedValue };
-    const url = qs.stringifyUrl({ url: "/search", query });
+    const url = qs.stringifyUrl({ url: "/search?query=", query });
     router.push(url);
   }, [debouncedValue, router]);
 
