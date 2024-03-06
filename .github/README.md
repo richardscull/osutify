@@ -1,17 +1,17 @@
-# Osutify
+# 🎵 Osutify
 
 ![Preview](preview.png)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/richardscull/osutify.svg?style=social&label=Star)](https://github.com/richardscull/osutify)
 
-## Description
-
-Osutify is a project that aims to create a music player specifically designed for the game osu!. It provides features such as song playback, playlist management, and integration with the osu! game client.
-
 ## 🌻 Live Demo
 
 A live demo of the application is available at [osutify.vercel.app](https://osutify.vercel.app/).
+
+## Description
+
+Osutify is a project that aims to create a music player specifically designed for the game osu!. The application uses the osu! API to fetch the latest songs and allows users to play them directly from the application. The application also includes a liked playlist where users can add their favorite songs.
 
 ## Features
 
