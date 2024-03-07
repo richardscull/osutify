@@ -28,6 +28,7 @@ export function MediaItem({ data, truncate, onClick }: MediaItemProps) {
           loading="lazy"
           blurDataURL="/images/unknown.jpg"
           placeholder="blur"
+          unoptimized
         />
       </div>
       <div className="flex flex-col gap-y-1 overflow-hidden ">

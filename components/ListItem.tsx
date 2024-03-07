@@ -29,6 +29,7 @@ export function ListItem({ image, name, href }: ListItemProps) {
           loading="lazy"
           blurDataURL="/images/unknown.jpg"
           placeholder="blur"
+          unoptimized
         />
       </div>
       <p title={name} className="font-medium truncate py-5">

@@ -42,6 +42,7 @@ export default async function Playlist({
                 loading="lazy"
                 blurDataURL="/images/unknown.jpg"
                 placeholder="blur"
+                unoptimized
               />
             </div>
             <div className="flex flex-col gap-y-2 mt-4 md:mt-0">
