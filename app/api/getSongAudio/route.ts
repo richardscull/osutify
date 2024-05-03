@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const servers = [
     "https://osu.direct/d/",
     "https://catboy.best/d/",
-    "https://api.chimu.moe/v1/download/",
+    //"https://api.chimu.moe/v1/download/", // chimu is down, will uncomment when it's back
     "https://proxy.nerinyan.moe/d/", // nerinyan my beloved
   ];
 
@@ -17,39 +17,38 @@ export async function GET(request: Request) {
   // Selfish individualism at its finest. We're going 💪
   blob = await blobRace(blob, servers, id!);
 
-  if (blob) {
-    try {
-      const reader = new zip.ZipReader(new zip.BlobReader(blob));
-      const files = (await reader.getEntries()) || [];
+  if (!blob) {
+    return new Response("Not Found", { status: 404 });
+  }
 
-      for (const file of files) {
-        if (file.filename.endsWith(".osu")) {
-          await file.getData!(new zip.TextWriter()).then(async (text) => {
-            const lines = text.split("\n");
-            for (const line of lines) {
-              if (line.startsWith("AudioFilename:")) {
-                const audioFilename = line.split(":")[1].trim();
-                const audioFile = files.find(
-                  (f) => f.filename === audioFilename
-                );
+  try {
+    const reader = new zip.ZipReader(new zip.BlobReader(blob));
+    const files = (await reader.getEntries()) || [];
 
-                if (audioFile) {
-                  const mp3Blob = await audioFile.getData!(
-                    new zip.BlobWriter(
-                      `audio/${audioFilename.split(".").pop()}`
-                    )
-                  );
-                  audioStream = mp3Blob;
-                }
+    for (const file of files) {
+      if (!file.filename.endsWith(".osu")) continue;
 
-                break;
-              } // 🧗 <- This is Jack. Jack loves climbing overly nested things.
-            }
-          });
+      const text = await file.getData!(new zip.TextWriter());
+      for (const line of text.split("\n")) {
+        if (!line.startsWith("AudioFilename:")) continue;
+
+        const audioFilename = line.split(":")[1].trim();
+        const audioFile = files.find((f) => f.filename === audioFilename);
+
+        if (!audioFile) {
+          console.error("Audio file not found in beatmap");
           break;
         }
+
+        audioStream = await audioFile.getData!(
+          new zip.BlobWriter(`audio/${audioFilename.split(".").pop()}`)
+        );
+        break;
       }
-    } catch (_) {}
+    }
+  } catch (e) {
+    console.error("Failed to extract audio from beatmap");
+    console.error(e);
   }
 
   let isShortVer = false;
