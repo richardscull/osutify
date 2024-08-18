@@ -1,95 +1,26 @@
 import * as zip from "@zip.js/zip.js";
 
-const cache = new Map<string, Blob>();
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+  const id = searchParams.get("id") || "0";
 
   const servers = [
-    "https://osu.direct/d/",
-    "https://catboy.best/d/",
-    "https://proxy.nerinyan.moe/d/", // nerinyan my beloved
+    "https://central.catboy.best/d/{}n",
+    "https://api.nerinyan.moe/d/{}?noVideo=true&noBg=true&NoHitsound=true&NoStoryboard=true",
   ];
 
   let audioStream = null;
-  let blob = null;
+  const blob = await blobRace(servers, id, servers.length);
 
-  if (cache.has(id!)) {
-    blob = cache.get(id!)!;
-  } else {
-    blob = await getBlob(servers, id!);
-
-    console.log("Blob", blob);
-
-    if (!blob) {
-      return new Response("Not Found", { status: 404 });
-    }
-
-    cache.set(id!, blob);
-    setTimeout(() => cache.delete(id!), 5 * 60 * 1000);
+  if (blob) {
+    audioStream = await unzipBlob(blob);
   }
-
-  audioStream = await unzipBlob(blob);
 
   let isShortVer = false;
   if (!audioStream) {
     const previewUrl = `https://b.ppy.sh/preview/${id}.mp3`;
     audioStream = await fetch(previewUrl).then((res) => res.blob());
     isShortVer = true;
-  }
-
-  const stream = audioStream.stream();
-  const reader = stream.getReader();
-
-  if (!request) {
-    return;
-  }
-
-  const range = request?.headers.get("Range");
-  if (range) {
-    const CHUNK_SIZE = 128 * 1024; // 128 KB
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = Math.min(start + CHUNK_SIZE - 1, blob.size - 1);
-    const chunkSize = end - start + 1;
-
-    // Read the range from the stream
-    const rangeStream = new ReadableStream({
-      start(controller) {
-        let position = 0;
-
-        reader.read().then(function processText({ done, value }) {
-          try {
-            if (done) {
-              controller.close();
-              return;
-            }
-
-            const chunk = value.slice(start, end + 1);
-            controller.enqueue(chunk);
-
-            position += chunk.length;
-            if (position >= chunkSize) {
-              controller.close();
-            }
-
-            reader.read().then(processText);
-          } catch (_) {}
-        });
-      },
-    });
-
-    return new Response(rangeStream, {
-      status: 206,
-      headers: {
-        "Content-Range": `bytes ${start}-${end}/${blob.size}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": chunkSize.toString(),
-        "Content-Type": "audio/mp3",
-        Connection: "keep-alive",
-      },
-    });
   }
 
   return new Response(audioStream, {
@@ -102,14 +33,13 @@ export async function GET(request: Request) {
 }
 
 async function getBlobFromUrl(url: string, id: string) {
-  return await fetch(url + id, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    },
-  })
-    .then(async (res) => {
+  console.log(
+    `Trying to fetch audio file from ${url.valueOf().replace("{}", id)}`
+  );
+  return await fetch(url.valueOf().replace("{}", id))
+    .then((res) => {
       if (!res.ok) return { url: url, blob: null };
+      console.log(`Found audio file at ${url}`);
       return { url: url, blob: res.blob() };
     })
     .catch((_) => {
@@ -117,18 +47,17 @@ async function getBlobFromUrl(url: string, id: string) {
     });
 }
 
-async function getBlob(servers: string[], id: string) {
+async function blobRace(servers: string[], id: string, retriesLeft: number) {
   let promises = servers.map((server) => getBlobFromUrl(server, id));
+  const data = await Promise.race(promises);
 
-  for (const p of promises) {
-    const data = await p;
-
-    if (await data.blob) {
-      return await data.blob;
-    }
+  if (data.blob) {
+    return await data.blob;
+  } else {
+    servers = servers.filter((s) => s.includes(data.url) === false);
+    if (!servers.length || !retriesLeft) return null;
+    return await blobRace(servers, id, retriesLeft - 1);
   }
-
-  return null;
 }
 
 async function unzipBlob(blob: Blob) {

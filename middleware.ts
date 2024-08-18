@@ -1,22 +1,13 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-/*
- * 🍪🍪🍪🍪🍪🍪🍪🍪
- * I HATE COOKIES
- * I HATE COOKIES
- * I HATE COOKIES
- * I HATE COOKIES
- * 🍪🍪🍪🍪🍪🍪🍪🍪
- */
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
 
 export async function middleware(request: NextRequest) {
-  if (request.method !== "GET" || request.nextUrl.pathname.includes("/api"))
-    return NextResponse.next(); // Don't run this middleware on POST requests or API routes
-
-  const osu_access_token = request.cookies.get("osu_access_token");
   const response = NextResponse.next();
 
-  if (!osu_access_token) {
+  if (!request.cookies.get("access_token")) {
     const data = await fetch("https://osu.ppy.sh/oauth/token", {
       body: JSON.stringify({
         client_id: process.env.OSU_CLIENT_ID,
@@ -30,15 +21,14 @@ export async function middleware(request: NextRequest) {
       method: "POST",
     });
 
-    if (data.ok) {
-      const json = await data.json();
-      response.cookies.set("osu_access_token", json.access_token, {
-        expires: new Date(Date.now() + json.expires_in * 1000),
-        httpOnly: true,
-        secure: true,
-      });
-      response.headers.set("Refresh", "0"); // 👩‍🦽👩‍🦽👩‍🦽👩‍🦽👩‍🦽
-    }
+    if (!data.ok) throw new Error("Can't get user token from osu.ppy.sh");
+
+    const json = await data.json();
+    response.cookies.set("osu_access_token", json.access_token, {
+      expires: new Date(Date.now() + json.expires_in * 1000),
+      httpOnly: true,
+      secure: true,
+    });
   }
 
   return response;
