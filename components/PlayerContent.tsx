@@ -76,6 +76,7 @@ export function PlayerConent({ song, songUrl }: PlayerContentProps) {
       setIsPlaying(false);
     },
     format: ["mp3"],
+    html5: true,
   });
 
   useEffect(() => {
