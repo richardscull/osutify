@@ -1,13 +1,35 @@
+"use client";
+
 import { Header } from "@/components/Header";
 import { ListItem } from "@/components/ListItem";
-import { getSongs } from "../actions/getSongs";
 import { PageContent } from "./components/PageContent";
 import { Greeting } from "@/components/Greeting";
+import { useInView } from "react-intersection-observer";
+import { useEffect, useState } from "react";
+import { Song } from "@/types";
+import axios from "axios";
 
-export const revalidate = 3600;
+export default function Home() {
+  const { ref, inView } = useInView();
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [cursor, setCursor] = useState<string | null | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
 
-export default async function Home() {
-  const songs = await getSongs();
+  useEffect(() => {
+    if (!inView) return;
+
+    setLoading(true);
+    axios
+      .post("/api/getSongsByQuery", {
+        cursor,
+      })
+      .then((res) => res.data)
+      .then(({ cursor, songs }) => {
+        setCursor(cursor);
+        setSongs((prev) => [...prev, ...songs]);
+        setLoading(false);
+      });
+  });
 
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
@@ -27,7 +49,8 @@ export default async function Home() {
         <div className="flex justify-between items-center">
           <h1 className="text-white text-2xl font-semibold">Newest songs</h1>
         </div>
-        <PageContent songs={songs} />
+        <PageContent songs={songs} loading={loading} />
+        <div ref={ref}></div>
       </div>
     </div>
   );

@@ -1,34 +1,29 @@
 import { Song } from "@/types";
-import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
 import axios from "axios";
 
 export async function getSongsByQuery(
+  token: string,
   query: string,
-  showUnranked: boolean = false
-): Promise<Song[]> {
-  const cookieStore = cookies();
-  if (!cookieStore.get("osu_access_token")) return [];
-
+  cursor?: string | null
+): Promise<{ cursor: string | null; songs: Song[] }> {
   try {
-    const { beatmapsets } = await axios
+    const { beatmapsets, cursor_string } = await axios
       .get(
         `https://osu.ppy.sh/api/v2/beatmapsets/search?nsfw=true${
           query && `&q=${query}`
-        }${showUnranked ? "&s=any" : "&s=ranked"}`,
+        }&s=any&cursor_string=${cursor}`,
         {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Bearer ${
-              cookieStore.get("osu_access_token")?.value
-            }`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )
       .then((res) => res.data);
 
-    if (!beatmapsets) return [];
+    if (!beatmapsets) return { cursor: null, songs: [] };
 
     await Promise.all(
       beatmapsets.map(async (song: any) => {
@@ -44,9 +39,9 @@ export async function getSongsByQuery(
       thumbnail: song.covers.cover,
     }));
 
-    return songs;
+    return { cursor: cursor_string, songs };
   } catch (err) {
     console.error(err);
-    return [];
+    return { cursor: null, songs: [] };
   }
 }

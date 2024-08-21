@@ -1,25 +1,27 @@
 import { Song } from "@/types";
-import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
 import axios from "axios";
 
-export async function getSongs(): Promise<Song[]> {
-  const cookieStore = cookies();
-  if (!cookieStore.get("osu_access_token")) return [];
-
+export async function getSongs(
+  token: string,
+  cursor?: string | null
+): Promise<{ cursor: string | null; songs: Song[] }> {
   try {
-    const { beatmapsets } = await axios
-      .get("https://osu.ppy.sh/api/v2/beatmapsets/search", {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${cookieStore.get("osu_access_token")?.value}`,
-        },
-      })
+    const { beatmapsets, cursor_string } = await axios
+      .get(
+        `https://osu.ppy.sh/api/v2/beatmapsets/search?cursor_string=${cursor}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((res) => res.data);
 
     if (!beatmapsets) {
-      return [];
+      return { cursor: null, songs: [] };
     }
 
     await Promise.all(
@@ -36,9 +38,9 @@ export async function getSongs(): Promise<Song[]> {
       thumbnail: song.covers.cover,
     }));
 
-    return songs;
+    return { cursor: cursor_string, songs };
   } catch (err) {
     console.error(err);
-    return [];
+    return { cursor: null, songs: [] };
   }
 }

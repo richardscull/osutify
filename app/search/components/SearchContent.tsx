@@ -7,9 +7,10 @@ import { Song } from "@/types";
 
 interface SearchContentProps {
   songs: Song[];
+  loading: boolean;
 }
 
-function SearchContent({ songs }: SearchContentProps) {
+function SearchContent({ songs, loading }: SearchContentProps) {
   const onPlay = useOnPlay(songs);
   if (songs.length === 0) {
     return (
@@ -23,7 +24,7 @@ function SearchContent({ songs }: SearchContentProps) {
           text-neutral-400
         "
       >
-        No songs found.
+        {loading ? "Loading..." : "No songs found."}
       </div>
     );
   }

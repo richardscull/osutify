@@ -5,13 +5,18 @@ import useOnPlay from "@/app/hooks/useOnPlay";
 
 interface PageContentProps {
   songs: Song[];
+  loading: boolean;
 }
 
-export function PageContent({ songs }: PageContentProps) {
+export function PageContent({ songs, loading }: PageContentProps) {
   const onPlay = useOnPlay(songs);
 
   if (songs.length === 0) {
-    return <div className="mt-4 text-neutral-400">No songs found</div>;
+    return (
+      <div className="mt-4 text-neutral-400">
+        {loading ? "Loading..." : "No songs found"}
+      </div>
+    );
   }
 
   return (
