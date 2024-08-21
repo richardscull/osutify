@@ -16,7 +16,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || cursor === null || loading) return;
 
     setLoading(true);
     axios

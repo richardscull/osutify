@@ -23,7 +23,7 @@ export default function Search({ searchParams }: SearchProps) {
   }, [searchParams.query]);
 
   useEffect(() => {
-    if (!inView || cursor === null) return;
+    if (!inView || cursor === null || loading) return;
 
     setLoading(true);
     axios
