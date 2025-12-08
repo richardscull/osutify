@@ -29,7 +29,7 @@ export default function Home() {
         setSongs((prev) => [...prev, ...songs]);
         setLoading(false);
       });
-  });
+  }, [inView, cursor, loading]);
 
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">

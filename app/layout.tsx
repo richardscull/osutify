@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
-import { getPacks } from "./actions/getPacks";
 import { Player } from "@/components/Player";
 
 const font = Figtree({ subsets: ["latin"] });
@@ -17,12 +16,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const packs = await getPacks();
-
   return (
     <html lang="en">
       <body className={font.className}>
-        <Sidebar packs={packs}>{children}</Sidebar>
+        <Sidebar>{children}</Sidebar>
         <Player />
       </body>
     </html>
