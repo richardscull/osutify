@@ -1,16 +1,20 @@
 import { Song } from "@/types";
-import { cookies } from "next/headers";
 import { checkSongCover } from "./utils";
 import axios from "axios";
 
-interface GetPackResponse {
+export interface GetPackResponse {
   packName: string;
   songs: Song[];
 }
 
-export async function getPack(tag: string): Promise<GetPackResponse> {
-  const cookieStore = cookies();
-  if (!cookieStore.get("osu_access_token"))
+export async function getPack({
+  tag,
+  access_token,
+}: {
+  tag: string;
+  access_token: string;
+}): Promise<GetPackResponse> {
+  if (access_token === "" || tag === "")
     return { packName: "Not found", songs: [] };
 
   try {
@@ -19,7 +23,7 @@ export async function getPack(tag: string): Promise<GetPackResponse> {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: `Bearer ${cookieStore.get("osu_access_token")?.value}`,
+          Authorization: `Bearer ${access_token}`,
         },
       })
       .then((res) => res.data);
