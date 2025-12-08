@@ -1,15 +1,35 @@
+"use client";
 import Image from "next/image";
 import { Header } from "@/components/Header";
-import { getPack } from "@/app/actions/getPack";
+import { GetPackResponse } from "@/app/actions/getPack";
 import PlaylistContent from "./components/PlaylistContent";
+import { use, useEffect, useState } from "react";
+import axios from "axios";
 
-export default async function Playlist({
+export default function Playlist({
   params,
 }: {
-  params: { tag: string };
+  params: Promise<{ tag: string }>;
 }) {
-  const data = await getPack(params.tag);
-  const { packName, songs } = data;
+  const { tag } = use(params);
+
+  const [data, setData] = useState<GetPackResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { packName, songs } = data || { packName: "", songs: [] };
+
+  useEffect(() => {
+    if (isLoading || data) return;
+
+    setIsLoading(true);
+    axios
+      .post("/api/getPack", { tag })
+      .then((res) => res.data)
+      .then(({ packName, songs }) => {
+        setData({ packName, songs });
+        setIsLoading(false);
+      });
+  }, [tag, data, isLoading]);
 
   return (
     <div

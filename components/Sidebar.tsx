@@ -1,6 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { HiHome } from "react-icons/hi";
 import { Box } from "./Box";
@@ -9,15 +9,31 @@ import { Library } from "./Library";
 import { Pack } from "@/types";
 import usePlayer from "@/app/hooks/usePlayer";
 import { twMerge } from "tailwind-merge";
+import axios from "axios";
 
 interface SidebarProps {
   children: React.ReactNode;
-  packs: Pack[];
 }
 
-export function Sidebar({ children, packs }: SidebarProps) {
+export function Sidebar({ children }: SidebarProps) {
   const pathName = usePathname();
   const player = usePlayer();
+
+  const [packs, setPacks] = useState<Pack[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isLoading || packs.length > 0) return;
+
+    setIsLoading(true);
+    axios
+      .post("/api/getPacks", {})
+      .then((res) => res.data)
+      .then((packs) => {
+        setPacks(packs);
+        setIsLoading(false);
+      });
+  }, [packs, isLoading]);
 
   const routes = useMemo(
     () => [

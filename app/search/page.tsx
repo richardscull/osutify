@@ -2,16 +2,17 @@
 import { Header } from "@/components/Header";
 import { SearchInput } from "@/components/SearchInput";
 import SearchContent from "./components/SearchContent";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { Song } from "@/types";
 import axios from "axios";
 
 interface SearchProps {
-  searchParams: { query: string };
+  searchParams: Promise<{ query: string }>;
 }
 
 export default function Search({ searchParams }: SearchProps) {
+  const { query } = use(searchParams);
   const { ref, inView } = useInView();
   const [songs, setSongs] = useState<Song[]>([]);
   const [cursor, setCursor] = useState<string | null | undefined>(undefined);
@@ -20,7 +21,7 @@ export default function Search({ searchParams }: SearchProps) {
   useEffect(() => {
     setSongs([]);
     setCursor(undefined);
-  }, [searchParams.query]);
+  }, [query]);
 
   useEffect(() => {
     if (!inView || cursor === null || loading) return;
@@ -28,7 +29,7 @@ export default function Search({ searchParams }: SearchProps) {
     setLoading(true);
     axios
       .post("/api/getSongsByQuery", {
-        query: searchParams.query,
+        query: query,
         cursor,
       })
       .then((res) => res.data)
@@ -37,7 +38,7 @@ export default function Search({ searchParams }: SearchProps) {
         setSongs((prev) => [...prev, ...songs]);
         setLoading(false);
       });
-  });
+  }, [inView, cursor, query, loading]);
 
   return (
     <div className="bg-neutral-900 rounded-lg h-full w-full overflow-hidden overflow-y-auto">
